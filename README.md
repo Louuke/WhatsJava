@@ -178,9 +178,8 @@ client.loadConversation(remoteJid, 25, "4C739872E8K15F7L0ACB", false);
 | getMimetype | Returns mimetype of the image |
 | getCaption | Returns caption |
 | getJpegThumbnail | Returns a thumbnail of the image |
+| getJpegFullResolution | Returns the image with full resolution or null if it could not be loaded |
 | ... | ... |
-
-**Note**: Full resolution images are not implemented
 
 - **WebVideoMessage**: Contains information about video messages
 
@@ -188,10 +187,9 @@ client.loadConversation(remoteJid, 25, "4C739872E8K15F7L0ACB", false);
 | ------------- |---------------|
 | getMimetype | Returns mimetype of the video |
 | getSeconds | Returns video length |
-| getJpegThumbnail | Returns a thumbnail of the video |
+| getMp4Thumbnail | Returns a thumbnail of the video |
+| getMp4FullResolution | Returns the video with full resolution or null if it could not be loaded |
 | ... | ... |
-
-**Note**: The download of videos is not implemented
 
 - **WebMessage**: Each Web[Type]Message class extends WebMessage and therefore contains the following methods
 
@@ -202,6 +200,8 @@ client.loadConversation(remoteJid, 25, "4C739872E8K15F7L0ACB", false);
 | getFromMe | Returns `true` if the message is from you |
 | getMessageTimestamp | Returns the message timestamp |
 | getStatus | Returns the status of the message |
+
+**Note**: Audio and document messages are not implemented
 
 ## Legal
 This code is in no way affiliated with, authorized, maintained, sponsored or endorsed by WhatsApp or any of its affiliates or subsidiaries. This is an independent and unofficial software. Use at your own risk.
