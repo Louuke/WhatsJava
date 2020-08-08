@@ -9,6 +9,11 @@ import icu.jnet.whatsjava.helper.Utils;
 
 public class BinaryEncryption {
 
+	/*
+	 * Encrypt and decrypt binary messages, but no E2E media
+	 * 
+	 */
+	
 	public static byte[] decrypt(byte[] message, EncryptionKeyPair keyPair) throws DecoderException {
 		// Encode byte array to hex char
 		String hexMessage = Hex.encodeHexString(message, true);

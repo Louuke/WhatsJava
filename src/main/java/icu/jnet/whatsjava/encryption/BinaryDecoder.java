@@ -279,26 +279,26 @@ public class BinaryDecoder {
 				
 				try {
 					switch(tag) {
-						// "message" message
+						// Conversation messages
 						case BinaryConstants.Tags.BINARY_8:
 							byte[] bin8 = readBytes(readByte() & 0xff);
 							base64Decoded = Base64.getEncoder().encodeToString(
 									WebMessageInfo.parseFrom(bin8).toByteArray());
+							
 							break;
-						// video & image message
+						// Image, video, extended and rarely conversation messages
 						case BinaryConstants.Tags.BINARY_20:
 							byte[] bin20 = readBytes(readInt20());
-							
 							base64Decoded = Base64.getEncoder().encodeToString(
 									WebMessageInfo.parseFrom(bin20).toByteArray());
+							
 							break;
 						// ?
 						case BinaryConstants.Tags.BINARY_32:
 							byte[] bin32 = readBytes(readInt(4, false));
-							
 							base64Decoded = Base64.getEncoder().encodeToString(
 									WebMessageInfo.parseFrom(bin32).toByteArray());
-						
+							
 							break;
 						default:
 							base64Decoded = readString(tag);

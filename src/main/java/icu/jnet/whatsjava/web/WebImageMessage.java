@@ -1,10 +1,17 @@
 package icu.jnet.whatsjava.web;
 
+import icu.jnet.whatsjava.encryption.MediaEncryption;
 import icu.jnet.whatsjava.encryption.proto.ProtoBuf.ImageMessage;
 import icu.jnet.whatsjava.encryption.proto.ProtoBuf.WebMessageInfo;
 
 public class WebImageMessage extends WebMessage {
 
+	/*
+	 * E2E media image message
+	 * 
+	 */
+	
+	
 	private String mimetype, url, caption;
 	private byte[] fileSha256, mediaKey, jpegThumbnail;
 	private long fileLength;
@@ -49,6 +56,10 @@ public class WebImageMessage extends WebMessage {
 	
 	public byte[] getJpegThumbnail() {
 		return jpegThumbnail;
+	}
+	
+	public byte[] getJpegFullResolution() {
+		return MediaEncryption.decrypt(mediaKey, url, MediaEncryption.MEDIA_TYPE_IMAGE);
 	}
 	
 	public long getFileLength() {

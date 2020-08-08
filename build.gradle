@@ -28,6 +28,9 @@ dependencies {
 	// https://mvnrepository.com/artifact/commons-codec/commons-codec
 	compile group: 'commons-codec', name: 'commons-codec', version: '1.14'
 
+	// https://mvnrepository.com/artifact/commons-io/commons-io
+	compile group: 'commons-io', name: 'commons-io', version: '2.7'
+
 	// https://mvnrepository.com/artifact/org.whispersystems/curve25519-java
 	compile group: 'org.whispersystems', name: 'curve25519-java', version: '0.5.0'
 	

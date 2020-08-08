@@ -6,7 +6,6 @@ import java.util.Base64;
 
 import org.whispersystems.curve25519.Curve25519;
 
-import at.favre.lib.crypto.HKDF;
 import icu.jnet.whatsjava.helper.Utils;
 
 public class EncryptionKeys {
@@ -25,7 +24,7 @@ public class EncryptionKeys {
 		byte[] sharedSecret = Curve25519.getInstance(Curve25519.BEST)
 				.calculateAgreement(publicKey, privateKey);
 		// Expand the shared key to 80 bytes using HKDF
-		byte[] sharedSecretExpanded = expandUsingHKDF(sharedSecret, 80);
+		byte[] sharedSecretExpanded = Utils.expandUsingHKDF(sharedSecret, 80, null);
 		
 		// Validate data by HMAC
 		boolean valid = hmacValidate(sharedSecretExpanded, secret);
@@ -59,11 +58,6 @@ public class EncryptionKeys {
 			}
 		}
 		return null;
-	}
-	
-	private static byte[] expandUsingHKDF(byte[] key, int length) {
-		byte[] pseudoRandomKey = HKDF.fromHmacSha256().extract(null, key);
-		return HKDF.fromHmacSha256().expand(pseudoRandomKey, null, length);
 	}
 	
 	private static boolean hmacValidate(byte[] sharedSecretExpanded, byte[] secret) {

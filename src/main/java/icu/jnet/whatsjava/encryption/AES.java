@@ -31,7 +31,22 @@ class AES {
 	    return null;
 	}
 	
-	// Encrypt it using AES and encKey
+	// Used for E2E media decryption in the MediaEncryption class
+	static byte[] decrypt(byte[] encrypted, byte[] secretKey, byte[] iv) {
+	    try 
+	    {
+	    	Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5PADDING"); // PKCS5PADDING required
+	    	SecretKeySpec secretKeySpec = new SecretKeySpec(secretKey, "AES");
+	    	cipher.init(Cipher.DECRYPT_MODE, secretKeySpec, new IvParameterSpec(iv));
+	    	
+	    	return cipher.doFinal(encrypted);
+	    } catch (Exception e) {
+	        System.out.println("Error while decrypting: " + e.toString());
+	    }
+	    return null;
+	}
+	
+	// Encrypt using AES and encKey
 	static byte[] encrypt(byte[] decrypted, byte[] encKey) {
 	    try 
 	    {

@@ -1,6 +1,12 @@
 package icu.jnet.whatsjava.helper;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.net.URL;
 import java.nio.ByteBuffer;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.time.Instant;
@@ -9,9 +15,12 @@ import java.util.Random;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 
+import org.apache.commons.io.FileUtils;
+
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
+import at.favre.lib.crypto.HKDF;
 import icu.jnet.whatsjava.constants.RequestType;
 import icu.jnet.whatsjava.encryption.BinaryEncoder;
 import icu.jnet.whatsjava.encryption.BinaryEncryption;
@@ -34,7 +43,7 @@ public class Utils {
 		}
 	}
 	
-	/* Generate random byte array of specified length */
+	// Generate random byte array of specified length
 	public static byte[] randomBytes(int length) {
 		Random rand = new Random();
 		byte[] clientId = new byte[length];
@@ -43,26 +52,26 @@ public class Utils {
 		return clientId;
 	}
 	
-	/* WhatsApp adds a tag to most of the json messages. That's why we need to remove it */
+	// WhatsApp adds a tag to most of the json messages. That's why we need to remove it
 	public static JsonObject encodeValidJson(String message, String splitStart) {
 		String rawSplittedMessage = message.replaceFirst(splitStart, "##").split("##")[1];
 		String rawMessage = rawSplittedMessage.substring(0, rawSplittedMessage.length() - 1);
 		return JsonParser.parseString(rawMessage).getAsJsonObject();
 	}
 	
-	/* Default split char [,] */
+	// Default split char [,]
 	public static JsonObject encodeValidJson(String message) {
 		String raw = message.replaceFirst("[,]", "##").split("##")[1];
 		return JsonParser.parseString(raw).getAsJsonObject();
 	}
 	
-	/* WhatsApp needs a message tag at the start of every Websocket request */
+	// WhatsApp needs a message tag at the start of every Websocket request
 	private static String getMessageTag() {
 		String messageTag = Instant.now().getEpochSecond() + ".--" + wsRequestCount++;
 		return messageTag;
 	}
 	
-	/* WhatsApp binary message tags look different */
+	// WhatsApp binary message tags look different
 	private static String getBinaryMessageTag() {
 		if(binaryMessageTag.equals("")) {
 			binaryMessageTag = (new Random().nextInt(900) + 100) + "";
@@ -76,7 +85,7 @@ public class Utils {
 		return wsRequestCount;
 	}
 	
-	/* Create a new websocket json request string  */
+	// Create a new websocket json request string
 	public static String buildWebsocketJsonRequest(int requestType, String... content) {
 		String messageTag = getMessageTag();
 		
@@ -108,7 +117,7 @@ public class Utils {
 		return request;
 	}
 	
-	/* Create a new websocket binary request array  */
+	// Create a new websocket binary request array
 	public static byte[] buildWebsocketBinaryRequest(EncryptionKeyPair keyPair, String json, byte... waTags) {
 		String tag = null;
 		
@@ -130,7 +139,13 @@ public class Utils {
 				.put(messageTag).put(waTags).put(hmacSign).put(encrypted).array();
 	}
 	
-	/* Implementation: https://github.com/danharper/hmac-examples */
+	// HLDF key expansion
+	public static byte[] expandUsingHKDF(byte[] key, int expandedLength, byte[] info) {
+		byte[] pseudoRandomKey = HKDF.fromHmacSha256().extract(null, key);
+		return HKDF.fromHmacSha256().expand(pseudoRandomKey, info, expandedLength);
+	}
+	
+	// Implementation: https://github.com/danharper/hmac-examples
 	public static byte[] signHMAC(byte[] hmacValidationKey, byte[] hmacValidationMessage) {
 	    try {
 	    	Mac hasher = Mac.getInstance("HmacSHA256");
@@ -139,6 +154,30 @@ public class Utils {
 			byte[] hash = hasher.doFinal(hmacValidationMessage);
 			return hash;
 		} catch (InvalidKeyException | NoSuchAlgorithmException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	// Download encrypted media files
+	public static byte[] urlToEncMedia(String url) {
+		try {
+			// Create random temporary file
+			Path path = Files.createTempFile(null, ".enc");
+			File tmpFile = path.toFile();
+			
+			byte[] encryptedMedia = null;
+			// Download encrypted file
+			try {
+				FileUtils.copyURLToFile(new URL(url), tmpFile);
+				
+				// Convert file to byte array
+				encryptedMedia = Files.readAllBytes(path);
+			} catch(FileNotFoundException ex) {}
+			
+			tmpFile.delete();
+			return encryptedMedia;
+		} catch (IOException e) {
 			e.printStackTrace();
 		}
 		return null;
