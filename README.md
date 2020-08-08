@@ -5,6 +5,22 @@ Big thanks to [@Sigalor](https://github.com/sigalor) and all participants of the
 
 This project is **WIP** and things could break in the future.
 
+### Gradle
+```java
+allprojects {
+    repositories {
+	...
+        maven { url 'https://jitpack.io' }
+    }
+}
+```
+```java
+dependencies {
+    implementation 'com.github.JicuNull:WhatsJava:v0.1.1-alpha'
+}
+```
+Find more options here: **[Jitpack](https://jitpack.io/#JicuNull/WhatsJava)**
+
 ## How to use it
 **Note**: The project is tested and compiled with Java 11
 
