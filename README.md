@@ -100,7 +100,7 @@ public void onWebVideoMessage(WebVideoMessage videoMessage) {
     // ...
 }
 ```
-### Send text messages
+### Send text message
 ```java
 String remoteJid = "0123456789@s.whatsapp.net";
 
@@ -110,6 +110,16 @@ client.sendMessage(remoteJid, "Hello World");
 - WhatsApp identifies a person or a group with a unique chat identification - `jid`.
 - Chats: `[country code][phone number]@s.whatsapp.net`, for example `490123456789@s.whatsapp.net`
 - Groups: `[phone number of group creator]-[timestamp of group creation]@g.us`, e.g. `490123456789-1596766695@g.us`
+
+### Delete sent message
+Lets you delete a sent message for yourself
+```java
+String remoteJid = "0123456789@s.whatsapp.net";
+String messageId = "3EM04B5BA7A366D3F9AE";
+boolean owner = true;
+					
+client.clearMessage(remoteJid, messageId, owner);
+```
 
 ### Load conversation
 Queries the chat history of a conversation 
