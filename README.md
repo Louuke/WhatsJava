@@ -16,7 +16,7 @@ allprojects {
 ```
 ```java
 dependencies {
-    implementation 'com.github.JicuNull:WhatsJava:v0.1.2-alpha'
+    implementation 'com.github.JicuNull:WhatsJava:v0.1.3-alpha'
 }
 ```
 Find more options here: **[Jitpack](https://jitpack.io/#JicuNull/WhatsJava)**
