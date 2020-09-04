@@ -87,7 +87,7 @@ public class BinaryDecoder {
 	}
 	
 	private int readInt20() {
-        checkEOS(3);
+		checkEOS(3);
         
 		int a = next() & 0xff;
 		int b = next() & 0xff;
@@ -112,8 +112,8 @@ public class BinaryDecoder {
 		}
 		
 		if (startByte >> 7 != 0) {
-            value = value.substring(0, value.length() - 1);
-        }
+			value = value.substring(0, value.length() - 1);
+		}
 		return value;
 	}
 	

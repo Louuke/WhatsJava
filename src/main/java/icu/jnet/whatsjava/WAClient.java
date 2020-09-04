@@ -152,10 +152,18 @@ public class WAClient extends WebSocketAdapter {
 		listener.onReceiveLoginResponse(200);
 	}
 	
-	// Generic text message
+	// Send generic text message
 	public void sendMessage(String remoteJid, String messageContent) {
 		String json = WAMessage.buildJson(remoteJid, messageContent, true, Instant.now().getEpochSecond());
 		sendBinary(json, WAMetric.message, WAFlag.ignore);
+	}
+	
+	// Delete the send message only for you
+	public void clearMessage(String remoteJid, String messageId, boolean owner) {
+		String modTag = Math.round(Math.random() * 1000000) + "";
+		sendBinary("[\"action\", {epoch: \"" + Utils.getMessageCount() + "\", type: \"set\"}, "
+				+ "[[\"chat\", {jid: \"" + remoteJid + "\", modify_tag: \"" + modTag +"\", type: \"clear\"}, "
+				+ "[[\"item\", {owner: \"" + owner + "\", index: \"" + messageId +"\"}, null]]]]]", WAMetric.group, WAFlag.ignore);
 	}
 	
 	// Load the last x messages of a direct chat or group

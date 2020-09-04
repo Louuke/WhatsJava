@@ -57,6 +57,7 @@ public class WAMessage {
 		JsonArray node = JsonParser.parseString(json).getAsJsonArray();
 		
 		JsonObject attributes = node.get(1).getAsJsonObject();
+		// Attributes key values
 		Set<String> keys = attributes.keySet();
 		
 		// Contains node content

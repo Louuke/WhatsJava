@@ -93,7 +93,7 @@ public class Utils {
 		
 		switch(requestType) {
 			case RequestType.LOGIN:
-				request = "[\"admin\",\"init\",[2,2029,4],[\"Ubuntu\",\"Firefox\",\"Unknown\"],\""
+				request = "[\"admin\",\"init\",[2,2035,14],[\"Ubuntu\",\"Firefox\",\"Unknown\"],\""
 						+ "" + content[0] + "\",true]";
 				break;
 			case RequestType.RESTORE_SESSION:
