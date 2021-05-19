@@ -99,8 +99,7 @@ public class WAMessage {
 		
 		for(int i = 0; i < childrenArray.size(); i++) {
 			// WebMessageInfo objects are encoded with base64 and need to be decoded
-			String base64Message = childrenArray.get(i).getAsJsonArray().get(2).getAsJsonArray()
-					.get(0).getAsString();
+			String base64Message = childrenArray.get(i).getAsJsonArray().get(2).getAsJsonArray().get(0).getAsString();
 			
 			byte[] byteMessage = Base64.getDecoder().decode(base64Message);
 			

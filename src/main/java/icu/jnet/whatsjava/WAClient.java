@@ -307,8 +307,5 @@ public class WAClient extends WebSocketAdapter {
 				}
 			}
 		}
-		
-		// Send all other types of messages directly to the active interface
-		//listener.onTextMessage(json);
 	}
 }

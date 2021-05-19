@@ -10,28 +10,26 @@ public class WebImageMessage extends WebMessage {
 	 * E2E media image message
 	 * 
 	 */
-	
-	
-	private String mimetype, url, caption;
-	private byte[] fileSha256, mediaKey, jpegThumbnail;
-	private long fileLength;
-	private int width, height;
-	
-	
+
+	private final String mimetype, url, caption;
+	private final byte[] fileSha256, mediaKey, jpegThumbnail;
+	private final long fileLength;
+	private final int width, height;
+
 	public WebImageMessage(WebMessageInfo message) {
 		super(message);
 		
 		ImageMessage imageMessage = message.getMessage().getImageMessage();
 		
-		url = imageMessage.getUrl();
-		mimetype = imageMessage.getMimetype();
-		fileSha256 = imageMessage.getFileSha256().toByteArray();
-		fileLength = imageMessage.getFileLength();
-		height = imageMessage.getHeight();
-		width = imageMessage.getWidth();
-		mediaKey = imageMessage.getMediaKey().toByteArray();
-		jpegThumbnail = imageMessage.getJpegThumbnail().toByteArray();
-		caption = imageMessage.getCaption();
+		this.url = imageMessage.getUrl();
+		this.mimetype = imageMessage.getMimetype();
+		this.fileSha256 = imageMessage.getFileSha256().toByteArray();
+		this.fileLength = imageMessage.getFileLength();
+		this.height = imageMessage.getHeight();
+		this.width = imageMessage.getWidth();
+		this.	mediaKey = imageMessage.getMediaKey().toByteArray();
+		this.jpegThumbnail = imageMessage.getJpegThumbnail().toByteArray();
+		this.caption = imageMessage.getCaption();
 	}
 	
 	public String getMimetype() {

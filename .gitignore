@@ -6,6 +6,3 @@ build
 
 # Ignore WhatsApp credential key storage
 credentials.json
-
-# Ignore WhatsJava fat jar
-/build/libs/WhatsJava-all.jar
