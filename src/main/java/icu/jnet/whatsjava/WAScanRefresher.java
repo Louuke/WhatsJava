@@ -7,9 +7,9 @@ import icu.jnet.whatsjava.helper.Utils;
 
 class WAScanRefresher{
 	
-	private WAClient client;
-	private String clientId;
-	private byte[] publicKey;
+	private final WAClient client;
+	private final String clientId;
+	private final byte[] publicKey;
 	
 	private boolean scanned = false;
 	
@@ -20,23 +20,19 @@ class WAScanRefresher{
 	}
 	
 	public void start() {
-		new Thread(new Runnable() {
-			
-			@Override
-			public void run() {
-				int run = 0;
-				
-				while(!scanned && run != 5) {
-					Utils.waitMillis(20000);
-					
-					// Request a new qr code, if the previous one was not scanned
-					// during the last 20 seconds. Max 5 times
-					if(!scanned) {
-						client.requestNewServerId();
-					}
-					
-					run++;
+		new Thread(() -> {
+			int run = 0;
+
+			while(!scanned && run != 5) {
+				Utils.waitMillis(20000);
+
+				// Request a new qr code, if the previous one was not scanned
+				// during the last 20 seconds. Max 5 times
+				if(!scanned) {
+					client.requestNewServerId();
 				}
+
+				run++;
 			}
 		}).start();
 	}

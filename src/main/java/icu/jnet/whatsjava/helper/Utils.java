@@ -54,8 +54,8 @@ public class Utils {
 	
 	// WhatsApp adds a tag to most of the json messages. That's why we need to remove it
 	public static JsonObject encodeValidJson(String message, String splitStart) {
-		String rawSplittedMessage = message.replaceFirst(splitStart, "##").split("##")[1];
-		String rawMessage = rawSplittedMessage.substring(0, rawSplittedMessage.length() - 1);
+		String rawSplitMessage = message.replaceFirst(splitStart, "##").split("##")[1];
+		String rawMessage = rawSplitMessage.substring(0, rawSplitMessage.length() - 1);
 		return JsonParser.parseString(rawMessage).getAsJsonObject();
 	}
 	
@@ -65,10 +65,9 @@ public class Utils {
 		return JsonParser.parseString(raw).getAsJsonObject();
 	}
 	
-	// WhatsApp needs a message tag at the start of every Websocket request
+	// WhatsApp needs a message tag at the start of every WebSocket request
 	private static String getMessageTag() {
-		String messageTag = Instant.now().getEpochSecond() + ".--" + wsRequestCount++;
-		return messageTag;
+		return Instant.now().getEpochSecond() + ".--" + wsRequestCount++;
 	}
 	
 	// WhatsApp binary message tags look different
@@ -76,9 +75,8 @@ public class Utils {
 		if(binaryMessageTag.equals("")) {
 			binaryMessageTag = (new Random().nextInt(900) + 100) + "";
 		}
-		String messageTag = binaryMessageTag + ".--" + wsRequestCount++;
-		
-		return messageTag;
+
+		return binaryMessageTag + ".--" + wsRequestCount++;
 	}
 	
 	public static int getMessageCount() {
@@ -93,7 +91,7 @@ public class Utils {
 		
 		switch(requestType) {
 			case RequestType.LOGIN:
-				request = "[\"admin\",\"init\",[2,2035,14],[\"Ubuntu\",\"Firefox\",\"Unknown\"],\""
+				request = "[\"admin\",\"init\",[2,2117,5],[\"Ubuntu\",\"Firefox\",\"Unknown\"],\""
 						+ "" + content[0] + "\",true]";
 				break;
 			case RequestType.RESTORE_SESSION:
@@ -117,8 +115,8 @@ public class Utils {
 		return request;
 	}
 	
-	// Create a new websocket binary request array
-	public static byte[] buildWebsocketBinaryRequest(EncryptionKeyPair keyPair, String json, byte... waTags) {
+	// Create a new WebSocket binary request array
+	public static byte[] buildWebSocketBinaryRequest(EncryptionKeyPair keyPair, String json, byte... waTags) {
 		String tag = null;
 		
 		if(json.contains("extendedTextMessage")) {
@@ -150,9 +148,8 @@ public class Utils {
 	    try {
 	    	Mac hasher = Mac.getInstance("HmacSHA256");
 			hasher.init(new SecretKeySpec(hmacValidationKey, "HmacSHA256"));
-			
-			byte[] hash = hasher.doFinal(hmacValidationMessage);
-			return hash;
+
+			return hasher.doFinal(hmacValidationMessage); // return hash
 		} catch (InvalidKeyException | NoSuchAlgorithmException e) {
 			e.printStackTrace();
 		}
@@ -173,7 +170,7 @@ public class Utils {
 				
 				// Convert file to byte array
 				encryptedMedia = Files.readAllBytes(path);
-			} catch(FileNotFoundException ex) {}
+			} catch(FileNotFoundException ignored) {}
 			
 			tmpFile.delete();
 			return encryptedMedia;

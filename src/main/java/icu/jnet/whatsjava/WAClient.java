@@ -32,7 +32,7 @@ import icu.jnet.whatsjava.web.WebVideoMessage;
 
 public class WAClient extends WebSocketAdapter {
 	
-	// WhatsApp Websocket server
+	// WhatsApp WebSocket server
 	private final String WHATSAPP_SERVER = "wss://web.whatsapp.com/ws";
 		
 	// WhatsApp rejects requests with different header
@@ -44,20 +44,19 @@ public class WAClient extends WebSocketAdapter {
 	// Stores ids, encryption keys...
 	protected AuthCredentials credentials;
 	// Path to the file where the credentials get stored
-	private String authCredentialsPath;
+	private final String authCredentialsPath;
 	// Generates a new qr code, if the last one expired
 	private WAScanRefresher refresher;
 	// Expected type of the next message the backend sends next
+	private byte expectedResponse;
+	private boolean loggedIn = false;
+
 	protected WebSocket ws;
 	protected ClientActionInterface listener;
 	
-	private byte expectedResponse;
-	private boolean loggedIn = false;
-	
-	
 	public WAClient(String authCredentialsPath) {
 		this.authCredentialsPath = authCredentialsPath;
-		credentials = AuthCredentialsHelper.loadAuthCredentials(authCredentialsPath);
+		this.credentials = AuthCredentialsHelper.loadAuthCredentials(authCredentialsPath);
 	}
 	
 	
@@ -83,6 +82,7 @@ public class WAClient extends WebSocketAdapter {
 	// Close WebSocket
 	public void disconnect() {
 		if(ws != null && ws.isOpen()) {
+			keepAlive.stop();
 			ws.disconnect();
 		}
 	}
@@ -192,7 +192,7 @@ public class WAClient extends WebSocketAdapter {
 	
 	private void sendBinary(String json, byte... waTags) {
 		EncryptionKeyPair keyPair = credentials.getEncryptionKeyPair();
-		ws.sendBinary(Utils.buildWebsocketBinaryRequest(keyPair, json, waTags));
+		ws.sendBinary(Utils.buildWebSocketBinaryRequest(keyPair, json, waTags));
 	}
 	
 	public void addClientActionListener(ClientActionInterface listener) {
@@ -213,7 +213,7 @@ public class WAClient extends WebSocketAdapter {
 		}
 		
 		// Received text message
-		System.out.println(message);	
+		System.out.println(message);
 		
 		// "Props" marks the last message send by the backend after login
 		if(message.contains("\"Props\"") && !loggedIn) {

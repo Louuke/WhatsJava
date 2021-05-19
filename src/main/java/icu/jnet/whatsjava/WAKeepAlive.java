@@ -9,49 +9,42 @@ import icu.jnet.whatsjava.helper.Utils;
 
 class WAKeepAlive {
 
-	/* Keeps the Websocket connection alive by sending a ping every 20-38 seconds */
+	/* Keeps the WebSocket connection alive by sending a ping every 20-30 seconds */
 	
-	// Timestamp of server answer
+	// Timestamp of last server answer
 	private long lastPong;
+	// Timestamp of last client ping
+	private long lastPing;
 	
-	private boolean running = false;
-	private WebSocket ws;
+	private boolean running = true;
+	private final WebSocket ws;
 	
 	public WAKeepAlive(WebSocket ws) {
 		this.ws = ws;
 	}
 	
 	public void start() {
-		running = true;
-		
-		Random rand = new Random();
-		
-		new Thread(new Runnable() {
-			
-			@Override
-			public void run() {
-				while(running) {
-					long millis = (rand.nextInt(21) + 15) * 1000;
-					Utils.waitMillis(millis);
-					
+		new Thread(() -> {
+			while(running) {
+				Utils.waitMillis(1000);
+
+				long now = Instant.now().getEpochSecond();
+				if(now - lastPing > 25) {
+					lastPing = now;
+
 					ws.sendText("?,,");
-					
-					Utils.waitMillis(3000);
-					
-					// Server timeout detection
-					if(Instant.now().getEpochSecond() - lastPong >= 5) {
-						stop();
-					}
+				} else if(now - lastPong > 30) { // Detect server timeout
+					stop();
 				}
 			}
 		}).start();
 	}
-	
-	public void updatePong() {
+
+	protected void updatePong() {
 		lastPong = Instant.now().getEpochSecond();
 	}
 	
-	private void stop() {
+	protected void stop() {
 		running = false;
 	}
 }

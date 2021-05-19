@@ -4,8 +4,8 @@ public class CurveKeyPair {
 	
 	/* Stores a Curve25519 key pair or loads it */
 	
-	private byte[] privateKey;
-	private byte[] publicKey;
+	private final byte[] privateKey;
+	private final byte[] publicKey;
 	
 	
 	public CurveKeyPair(byte[] privateKey, byte[] publicKey) {

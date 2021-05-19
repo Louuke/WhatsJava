@@ -264,7 +264,7 @@ public class BinaryDecoder {
 		String[] content = null;
 		
 		if(listSize % 2 == 0) {
-			int tag = readByte() & 0xff; // Needs to cast to unsigned byte or int
+			int tag = readByte() & 0xff; // Needs cast to unsigned byte / int
 			
 			if(isListTag(tag)) {
 				content = readList(tag);
@@ -305,18 +305,15 @@ public class BinaryDecoder {
 							break;
 					}
 				
-					content = new String[1];
-					content[0] = "\"" + base64Decoded + "\"";
+					content = new String[] {"\"" + base64Decoded + "\""};
 				
 				} catch (InvalidProtocolBufferException e) {
 					e.printStackTrace();
 				}
 			}
 		}
-		
-		String node = "[\"" + descr + "\", " + attrs + ", " + Arrays.toString(content) + "]";
-		
-		return node;
+
+		return "[\"" + descr + "\", " + attrs + ", " + Arrays.toString(content) + "]"; // Node
 	}
 	
 	// Lists
