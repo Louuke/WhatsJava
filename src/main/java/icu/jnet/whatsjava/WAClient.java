@@ -64,7 +64,7 @@ public class WAClient extends WebSocketAdapter {
 	public WAClient openConnection() {
 		try {
 			disconnect();
-			
+
 			WebSocketFactory factory = new WebSocketFactory();
 			ws = factory.createSocket(WHATSAPP_SERVER);
 			ws.addHeader("Origin", HEADER_ORIGIN);

@@ -55,41 +55,43 @@ public class WAMessage {
 	 */
 	public static Object[] jsonToObject(String json) {
 		JsonArray node = JsonParser.parseString(json).getAsJsonArray();
-		
-		JsonObject attributes = node.get(1).getAsJsonObject();
-		// Attributes key values
-		Set<String> keys = attributes.keySet();
-		
-		// Contains node content
-		JsonArray childrenArray = node.get(2).getAsJsonArray();
-		
 		Object[] objects = null;
-		
-		if(keys.contains("add")) { // Generic message
-			objects = messageToObject(childrenArray);
-		} else if(!keys.contains("duplicate") && keys.contains("type")) {
-			
-			String typeValue = attributes.get("type").getAsString();
-			
-			switch(typeValue) {
-				case "message":
-					// Also generic message but gets called as response of the loadConversation() method
-					objects = messageToObject(childrenArray);
-					break;
-				case "chat":
-					objects = chatToObject(childrenArray);
-					break;
-				case "contacts":
-					objects = contactToObject(childrenArray);
-					break;
-				case "status":
-					objects = statusToObject(childrenArray);
-					break;
-				case "emoji":
-					objects = emojiToObject(childrenArray);
-					break;
+
+		if(node.get(1) != null) {
+			JsonObject attributes = node.get(1).getAsJsonObject();
+			// Attributes key values
+			Set<String> keys = attributes.keySet();
+
+			// Contains node content
+			JsonArray childrenArray = node.get(2).getAsJsonArray();
+
+			if(keys.contains("add")) { // Generic message
+				objects = messageToObject(childrenArray);
+			} else if(!keys.contains("duplicate") && keys.contains("type")) {
+
+				String typeValue = attributes.get("type").getAsString();
+
+				switch(typeValue) {
+					case "message":
+						// Also generic message but gets called as response of the loadConversation() method
+						objects = messageToObject(childrenArray);
+						break;
+					case "chat":
+						objects = chatToObject(childrenArray);
+						break;
+					case "contacts":
+						objects = contactToObject(childrenArray);
+						break;
+					case "status":
+						objects = statusToObject(childrenArray);
+						break;
+					case "emoji":
+						objects = emojiToObject(childrenArray);
+						break;
+				}
 			}
 		}
+
 		return objects;
 	}
 	
