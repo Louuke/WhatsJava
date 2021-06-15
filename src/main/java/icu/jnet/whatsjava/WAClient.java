@@ -94,8 +94,8 @@ public class WAClient extends WebSocketAdapter {
 		
 		// Random clientId as 16 base64-encoded bytes
 		String clientId = credentials.getClientId();
-		String loginRequest = Utils.buildWebsocketJsonRequest(RequestType.LOGIN, clientId);
-		
+		String loginRequest = Utils.buildWebSocketJsonRequest(RequestType.LOGIN, clientId);
+
 		ws.sendText(loginRequest);
 	}
 	
@@ -105,7 +105,7 @@ public class WAClient extends WebSocketAdapter {
 		String serverToken = credentials.getServerToken();
 		String clientId = credentials.getClientId();
 		
-		String restoreRequest = Utils.buildWebsocketJsonRequest(RequestType.RESTORE_SESSION, 
+		String restoreRequest = Utils.buildWebSocketJsonRequest(RequestType.RESTORE_SESSION,
 				clientToken, serverToken, clientId);
 		
 		ws.sendText(restoreRequest);
@@ -127,7 +127,7 @@ public class WAClient extends WebSocketAdapter {
 		String serverToken = credentials.getServerToken();
 		String clientId = credentials.getClientId();
 		
-		String challengeRequest = Utils.buildWebsocketJsonRequest(RequestType.SOLVE_CHALLENGE, 
+		String challengeRequest = Utils.buildWebSocketJsonRequest(RequestType.SOLVE_CHALLENGE,
 				signedChallengeBase64, serverToken, clientId);
 		
 		ws.sendText(challengeRequest);
@@ -135,7 +135,7 @@ public class WAClient extends WebSocketAdapter {
 	
 	// QR code expired request a new one
 	protected void requestNewServerId() {
-		ws.sendText(Utils.buildWebsocketJsonRequest(RequestType.NEW_SERVER_ID, ""));
+		ws.sendText(Utils.buildWebSocketJsonRequest(RequestType.NEW_SERVER_ID, ""));
 	}
 	
 	// Gets called after a successful login
@@ -219,14 +219,13 @@ public class WAClient extends WebSocketAdapter {
 		if(message.contains("\"Props\"") && !loggedIn) {
 			confirmLogin();
 		}
-			
 		
 		String clientId = credentials.getClientId();
 		
         switch(expectedResponse) {
         	// Logging in procedure
         	case ExpectedResponse.LOGIN:
-            	// If we can not find any data of a previous session we create a new one
+            	// If we can not find any information of a previous session we create a new one
         		
             	if(credentials.getClientToken() == null) {
             		// Request new qr code
@@ -249,7 +248,7 @@ public class WAClient extends WebSocketAdapter {
         			int status = Utils.encodeValidJson(message).get("status").getAsInt();
         			
         			if(status != 200) {
-        				// A error occurred during authentication
+        				// An error occurred during authentication
         				// Old session data is invalid so it gets deleted
         				AuthCredentialsHelper.deletePreviousSession(authCredentialsPath);
         				disconnect();

@@ -83,8 +83,8 @@ public class Utils {
 		return wsRequestCount;
 	}
 	
-	// Create a new websocket json request string
-	public static String buildWebsocketJsonRequest(int requestType, String... content) {
+	// Create a new WebSocket json request string
+	public static String buildWebSocketJsonRequest(int requestType, String... content) {
 		String messageTag = getMessageTag();
 		
 		String request = "";
@@ -110,9 +110,8 @@ public class Utils {
 				request = "[\"admin\",\"Conn\",\"reref\"]";
 				break;
 		}
-		
-		request = messageTag + "," + request;
-		return request;
+
+		return messageTag + "," + request;
 	}
 	
 	// Create a new WebSocket binary request array
