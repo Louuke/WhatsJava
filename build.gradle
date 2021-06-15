@@ -37,7 +37,7 @@ dependencies {
 	implementation group: 'at.favre.lib', name: 'hkdf', version: '1.0.2'
 
 	// https://mvnrepository.com/artifact/com.neovisionaries/nv-websocket-client
-	implementation group: 'com.neovisionaries', name: 'nv-websocket-client', version: '2.14'
+	compile group: 'com.neovisionaries', name: 'nv-websocket-client', version: '2.14'
 
 	// Use JUnit test framework
 	testImplementation 'junit:junit:4.12'
