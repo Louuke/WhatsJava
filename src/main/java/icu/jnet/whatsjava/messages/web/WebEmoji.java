@@ -1,9 +1,9 @@
-package icu.jnet.whatsjava.web;
+package icu.jnet.whatsjava.messages.web;
 
 public class WebEmoji {
 
-	private String code;
-	private double value;
+	private final String code;
+	private final double value;
 	
 	public WebEmoji(String code, double value) {
 		this.code = code;

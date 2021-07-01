@@ -1,4 +1,4 @@
-package icu.jnet.whatsjava.web;
+package icu.jnet.whatsjava.messages.web;
 
 import icu.jnet.whatsjava.encryption.MediaEncryption;
 import icu.jnet.whatsjava.encryption.proto.ProtoBuf.VideoMessage;
@@ -12,28 +12,30 @@ public class WebVideoMessage extends WebMessage {
 	 * 
 	 */
 	
-	private String mimetype, url;
-	private byte[] fileSha256, mediaKey, jpegThumbnail;
-	private long fileLength;
-	private int seconds;
-	private VIDEO_MESSAGE_ATTRIBUTION gifAttribution;
-	private boolean gifPlayback;
+	private final String mimetype, url;
+	private final byte[] fileSha256, mediaKey, jpegMp4Thumbnail, mp4FullResolution;
+	private final long fileLength;
+	private final int seconds;
+	private final VIDEO_MESSAGE_ATTRIBUTION gifAttribution;
+	private final boolean gifPlayback;
 	
 	
 	public WebVideoMessage(WebMessageInfo message) {
 		super(message);
 		
 		VideoMessage videoMessage = message.getMessage().getVideoMessage();
-		
-		url = videoMessage.getUrl();
-		mimetype = videoMessage.getMimetype();
-		fileSha256 = videoMessage.getFileSha256().toByteArray();
-		fileLength = videoMessage.getFileLength();
-		seconds = videoMessage.getSeconds();
-		mediaKey = videoMessage.getMediaKey().toByteArray();
-		gifPlayback = videoMessage.getGifPlayback();
-		jpegThumbnail = videoMessage.getJpegThumbnail().toByteArray();
-		gifAttribution = videoMessage.getGifAttribution();
+
+		this.url = videoMessage.getUrl();
+		this.mimetype = videoMessage.getMimetype();
+		this.fileSha256 = videoMessage.getFileSha256().toByteArray();
+		this.fileLength = videoMessage.getFileLength();
+		this.seconds = videoMessage.getSeconds();
+		this.mediaKey = videoMessage.getMediaKey().toByteArray();
+		this.gifPlayback = videoMessage.getGifPlayback();
+		this.gifAttribution = videoMessage.getGifAttribution();
+
+		this.jpegMp4Thumbnail = videoMessage.getJpegThumbnail().toByteArray();
+		this.mp4FullResolution = MediaEncryption.decrypt(mediaKey, url, MediaEncryption.MEDIA_TYPE_VIDEO);
 	}
 	
 	public String getMimetype() {
@@ -53,11 +55,11 @@ public class WebVideoMessage extends WebMessage {
 	}
 	
 	public byte[] getMp4Thumbnail() {
-		return jpegThumbnail;
+		return jpegMp4Thumbnail;
 	}
 	
 	public byte[] getMp4FullResolution() {
-		return MediaEncryption.decrypt(mediaKey, url, MediaEncryption.MEDIA_TYPE_VIDEO);
+		return mp4FullResolution;
 	}
 	
 	public long getFileLength() {

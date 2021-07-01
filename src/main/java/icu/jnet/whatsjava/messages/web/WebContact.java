@@ -1,9 +1,9 @@
-package icu.jnet.whatsjava.web;
+package icu.jnet.whatsjava.messages.web;
 
 public class WebContact {
 
-	private String jid;
-	private String name;
+	private final String jid;
+	private final String name;
 	
 	public WebContact(String jid, String name) {
 		this.jid = jid;

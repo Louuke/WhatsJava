@@ -13,6 +13,7 @@ import javax.imageio.ImageIO;
 
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.EncodeHintType;
+import com.google.zxing.MultiFormatWriter;
 import com.google.zxing.WriterException;
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.QRCodeWriter;
@@ -20,32 +21,35 @@ import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
 
 public class QRGen {
 	
-	public static BufferedImage generateQRcode(String clientId, String serverId, byte[] publicKey) {
+	public static BufferedImage generateQRCodeImage(String clientId, String serverId, byte[] publicKey) {
 		String base64PubKey = Base64.getEncoder().encodeToString(publicKey);
 		
 		// Combine serverId + base64 public key + clientId and encode it to a QR code
-		String qrCodeString = serverId + "," + base64PubKey + "," + clientId;
-		
-		return createAsBufferedImage(qrCodeString);
+		return encodeToBufferedImage(String.format("%s,%s,%s", serverId, base64PubKey, clientId));
 	}
-	
-	private static String createAsBase64(String input) {
+
+	public static String generateQRCodeConsole(String clientId, String serverId, byte[] publicKey) {
+		String base64PubKey = Base64.getEncoder().encodeToString(publicKey);
+
+		// Combine serverId + base64 public key + clientId and encode it to a QR code
+		return encodeToConsoleString(String.format("%s,%s,%s", serverId, base64PubKey, clientId));
+	}
+
+	private static String encodeToConsoleString(String qr) {
+		int width = 50;
+		int height = 50;
+
 		try {
-			ByteArrayOutputStream baos = new ByteArrayOutputStream();
-			ImageIO.write(encodeToBufferedImage(input), "jpg", baos);
-			byte[] byteArray = baos.toByteArray();
-			return Base64.getEncoder().encodeToString(byteArray);
-		} catch (IOException e) {
+			MultiFormatWriter WRITER = new MultiFormatWriter();
+			return WRITER.encode(qr, BarcodeFormat.QR_CODE, width, height, Map.of(EncodeHintType.MARGIN, 0))
+					.toString("\033[40m  \033[0m", "\033[47m  \033[0m");
+		} catch (WriterException e) {
 			e.printStackTrace();
 		}
 		return null;
 	}
 	
-	private static BufferedImage createAsBufferedImage(String input) {
-		return encodeToBufferedImage(input);
-	}
-	
-	private static BufferedImage encodeToBufferedImage(String input) {
+	private static BufferedImage encodeToBufferedImage(String qr) {
 		int size = 500;
 		
 		try {
@@ -57,7 +61,7 @@ public class QRGen {
 			hintMap.put(EncodeHintType.ERROR_CORRECTION, ErrorCorrectionLevel.L);
  
 			QRCodeWriter qrCodeWriter = new QRCodeWriter();
-			BitMatrix byteMatrix = qrCodeWriter.encode(input, BarcodeFormat.QR_CODE, size,
+			BitMatrix byteMatrix = qrCodeWriter.encode(qr, BarcodeFormat.QR_CODE, size,
 					size, hintMap);
 			int qrWidth = byteMatrix.getWidth();
 			BufferedImage image = new BufferedImage(qrWidth, qrWidth, BufferedImage.TYPE_INT_RGB);

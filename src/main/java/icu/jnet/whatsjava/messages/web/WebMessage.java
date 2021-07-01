@@ -1,26 +1,26 @@
-package icu.jnet.whatsjava.web;
+package icu.jnet.whatsjava.messages.web;
 
 import icu.jnet.whatsjava.encryption.proto.ProtoBuf.WebMessageInfo;
 import icu.jnet.whatsjava.encryption.proto.ProtoBuf.WebMessageInfo.WEB_MESSAGE_INFO_STATUS;
 
-class WebMessage {
+public class WebMessage {
 	
 	/*
 	 * Gets extended by other "WebTypeMessage" classes
 	 * 
 	 */
 	
-	private String remoteJid, id;
-	private boolean fromMe;
-	private long messageTimestamp;
-	private WEB_MESSAGE_INFO_STATUS status;
+	private final String remoteJid, id;
+	private final boolean fromMe;
+	private final long messageTimestamp;
+	private final WEB_MESSAGE_INFO_STATUS status;
 	
 	public WebMessage(WebMessageInfo message) {
-		remoteJid = message.getKey().getRemoteJid();
-		id = message.getKey().getId();
-		fromMe = message.getKey().getFromMe();
-		messageTimestamp = message.getMessageTimestamp();
-		status = message.getStatus();
+		this.remoteJid = message.getKey().getRemoteJid();
+		this.id = message.getKey().getId();
+		this.fromMe = message.getKey().getFromMe();
+		this.messageTimestamp = message.getMessageTimestamp();
+		this.status = message.getStatus();
 	}
 	
 	public String getRemoteJid() {

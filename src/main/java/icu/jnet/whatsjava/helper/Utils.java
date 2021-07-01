@@ -31,17 +31,8 @@ public class Utils {
 	// Number of created message tags
 	private static int wsRequestCount = 0;
 	
-	// Binary messages get a different kind of message tags and it does not change
+	// Binary messages get a different type of message tags and they do not change
 	private static String binaryMessageTag = "";
-	
-	
-	public static void waitMillis(long millis) {
-		try {
-			Thread.sleep(millis);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
-	}
 	
 	// Generate random byte array of specified length
 	public static byte[] randomBytes(int length) {
@@ -72,8 +63,8 @@ public class Utils {
 	
 	// WhatsApp binary message tags look different
 	private static String getBinaryMessageTag() {
-		if(binaryMessageTag.equals("")) {
-			binaryMessageTag = (new Random().nextInt(900) + 100) + "";
+		if(binaryMessageTag.isEmpty()) {
+			binaryMessageTag = String.valueOf(new Random().nextInt(900) + 100);
 		}
 
 		return binaryMessageTag + ".--" + wsRequestCount++;
@@ -82,8 +73,14 @@ public class Utils {
 	public static int getMessageCount() {
 		return wsRequestCount;
 	}
-	
-	// Create a new WebSocket json request string
+
+	/**
+	 * Create a new WebSocket json request string
+	 *
+	 * @param requestType Specifies the type of the json message
+	 * @param content Information required to create the message
+	 * @return Correctly formatted json request
+	 */
 	public static String buildWebSocketJsonRequest(int requestType, String... content) {
 		String messageTag = getMessageTag();
 		
@@ -91,23 +88,19 @@ public class Utils {
 		
 		switch(requestType) {
 			case RequestType.LOGIN:
-				request = "[\"admin\",\"init\",[2,2121,6],[\"Ubuntu\",\"Firefox\",\"Unknown\"],\""
-						+ "" + content[0] + "\",true]";
+				request = String.format("[\"admin\", \"init\", [2,2121,6], [\"API\", \"WhatsJava\", \"Unknown\"], \"%s\", true]", content[0]);
 				break;
 			case RequestType.RESTORE_SESSION:
-				request = "[\"admin\",\"login\","
-						+ "\"" + content[0] + "\","
-						+ "\"" + content[1] + "\","
-						+ "\"" + content[2] + "\",\"takeover\"]";
+				request = String.format("[\"admin\", \"login\", \"%s\", \"%s\", \"%s\", \"takeover\"]", content[0], content[1], content[2]);
 				break;
 			case RequestType.SOLVE_CHALLENGE:
-				request = "[\"admin\",\"challenge\","
-						+ "\"" + content[0] + "\","
-						+ "\"" + content[1] + "\","
-						+ "\"" + content[2] + "\"]";
+				request = String.format("[\"admin\", \"challenge\", \"%s\", \"%s\", \"%s\"]", content[0], content[1], content[2]);
 				break;
 			case RequestType.NEW_SERVER_ID:
 				request = "[\"admin\",\"Conn\",\"reref\"]";
+				break;
+			case RequestType.QUERY_PROFILE_PICTURE:
+				request = String.format("[\"query\", \"ProfilePicThumb\", \"%s\"]", content[0]);
 				break;
 		}
 
@@ -122,17 +115,15 @@ public class Utils {
 			tag = json.split(" id: \"")[1].split("\"")[0] + ",";
 		}
 		
-		// waTags tells WA what the message is about
-		
 		BinaryEncoder encoder = new BinaryEncoder();
 		byte[] encoded = encoder.encode(json);
 		
 		byte[] encrypted = BinaryEncryption.encrypt(encoded, keyPair);
 		byte[] hmacSign = Utils.signHMAC(keyPair.getMacKey(), encrypted);
 		byte[] messageTag = tag != null ? tag.getBytes() : (Utils.getBinaryMessageTag() + ",").getBytes();
-		
-		return ByteBuffer.allocate(
-				messageTag.length + waTags.length + hmacSign.length + encrypted.length)
+
+		// waTags tell WA what the message is about
+		return ByteBuffer.allocate(messageTag.length + waTags.length + hmacSign.length + encrypted.length)
 				.put(messageTag).put(waTags).put(hmacSign).put(encrypted).array();
 	}
 	
@@ -155,8 +146,8 @@ public class Utils {
 		return null;
 	}
 	
-	// Download encrypted media files
-	public static byte[] urlToEncMedia(String url) {
+	// Download encrypted media file
+	public static byte[] urlToEncryptedMedia(String url) {
 		try {
 			// Create random temporary file
 			Path path = Files.createTempFile(null, ".enc");
@@ -166,7 +157,6 @@ public class Utils {
 			// Download encrypted file
 			try {
 				FileUtils.copyURLToFile(new URL(url), tmpFile);
-				
 				// Convert file to byte array
 				encryptedMedia = Files.readAllBytes(path);
 			} catch(FileNotFoundException ignored) {}
@@ -177,5 +167,34 @@ public class Utils {
 			e.printStackTrace();
 		}
 		return null;
+	}
+
+	// Download unencrypted media file
+	public static byte[] urlToUnencryptedMedia(String url) {
+		try {
+			// Create random temporary file
+			Path path = Files.createTempFile(null, ".jpg");
+			File tmpFile = path.toFile();
+
+			byte[] unencryptedMedia = null;
+			// Download unencrypted file
+			FileUtils.copyURLToFile(new URL(url), tmpFile);
+			// Convert file to byte array
+			unencryptedMedia = Files.readAllBytes(path);
+
+			tmpFile.delete();
+			return unencryptedMedia;
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	public static void waitMill(long millis) {
+		try {
+			Thread.sleep(millis);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 	}
 }

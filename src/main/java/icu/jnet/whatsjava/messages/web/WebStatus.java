@@ -1,4 +1,4 @@
-package icu.jnet.whatsjava.web;
+package icu.jnet.whatsjava.messages.web;
 
 public class WebStatus {
 

@@ -241,74 +241,67 @@ public class BinaryDecoder {
 	}
 	
 	// Nodes
-	
+
 	private String readNode() {
-		int listSize = readListSize(readByte() & 0xff); // Needs to cast to unsigned byte or int
+		int readByte = readByte() & 0xff;
+		int listSize = readListSize(readByte); // Needs cast to unsigned byte or int
 		int descrTag = readByte() & 0xff;
-		
 		if(descrTag == BinaryConstants.Tags.STREAM_END) {
 			System.err.println("Unexpected stream end");
 		}
-		
+
 		String descr = readString(descrTag);
 		if(listSize == 0 || descr == null) {
 			System.err.println("Invalid node");
 		}
-		
-		//System.out.println("List size: " + listSize + " - " + descr);
-		
+
 		String attrs = readAttributes((listSize - 1) >> 1);
-		//System.out.println(attrs);
-		
-		
 		String[] content = null;
-		
+
 		if(listSize % 2 == 0) {
 			int tag = readByte() & 0xff; // Needs cast to unsigned byte / int
-			
 			if(isListTag(tag)) {
 				content = readList(tag);
 			} else {
 				/*
 				 * Handles messages with the message description only
 				 * The byte array gets further processed using protobuf
-				 * 
+				 *
 				 */
-				
-				String base64Decoded = "";
-				
-				try {
-					switch(tag) {
-						// Conversation messages
-						case BinaryConstants.Tags.BINARY_8:
-							byte[] bin8 = readBytes(readByte() & 0xff);
-							base64Decoded = Base64.getEncoder().encodeToString(
-									WebMessageInfo.parseFrom(bin8).toByteArray());
-							
-							break;
-						// Image, video, extended and rarely conversation messages
-						case BinaryConstants.Tags.BINARY_20:
-							byte[] bin20 = readBytes(readInt20());
-							base64Decoded = Base64.getEncoder().encodeToString(
-									WebMessageInfo.parseFrom(bin20).toByteArray());
-							
-							break;
-						// ?
-						case BinaryConstants.Tags.BINARY_32:
-							byte[] bin32 = readBytes(readInt(4, false));
-							base64Decoded = Base64.getEncoder().encodeToString(
-									WebMessageInfo.parseFrom(bin32).toByteArray());
-							
-							break;
-						default:
-							base64Decoded = readString(tag);
-							break;
+
+				String decodedString = "";
+				byte [] decodedArray = null;
+
+				switch(tag) {
+					// Conversation messages
+					case BinaryConstants.Tags.BINARY_8:
+						decodedArray = readBytes(readByte() & 0xff);
+						break;
+					// Image, video, extended and rarely conversation messages
+					case BinaryConstants.Tags.BINARY_20:
+						decodedArray = readBytes(readInt20());
+						break;
+					// ?
+					case BinaryConstants.Tags.BINARY_32:
+						decodedArray = readBytes(readInt(4, false));
+						break;
+					default:
+						decodedString = readString(tag);
+						break;
+				}
+
+				if (descr.equals("message") && decodedArray != null) {
+					try {
+						String base64Decoded = Base64.getEncoder().encodeToString(WebMessageInfo.parseFrom(decodedArray).toByteArray());
+						content = new String[] {"\"" + base64Decoded + "\""};
+
+					} catch (InvalidProtocolBufferException e) {
+						e.printStackTrace();
 					}
-				
-					content = new String[] {"\"" + base64Decoded + "\""};
-				
-				} catch (InvalidProtocolBufferException e) {
-					e.printStackTrace();
+
+				} else {
+					content = new String[] {"\"" + decodedString + "\""};
+
 				}
 			}
 		}

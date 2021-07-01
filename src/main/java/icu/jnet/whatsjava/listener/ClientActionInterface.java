@@ -1,14 +1,14 @@
-package icu.jnet.whatsjava;
+package icu.jnet.whatsjava.listener;
 
 import java.awt.image.BufferedImage;
 
-import icu.jnet.whatsjava.web.WebChat;
-import icu.jnet.whatsjava.web.WebContact;
-import icu.jnet.whatsjava.web.WebConversationMessage;
-import icu.jnet.whatsjava.web.WebEmoji;
-import icu.jnet.whatsjava.web.WebImageMessage;
-import icu.jnet.whatsjava.web.WebStatus;
-import icu.jnet.whatsjava.web.WebVideoMessage;
+import icu.jnet.whatsjava.messages.web.WebChat;
+import icu.jnet.whatsjava.messages.web.WebContact;
+import icu.jnet.whatsjava.messages.web.WebConversationMessage;
+import icu.jnet.whatsjava.messages.web.WebEmoji;
+import icu.jnet.whatsjava.messages.web.WebImageMessage;
+import icu.jnet.whatsjava.messages.web.WebStatus;
+import icu.jnet.whatsjava.messages.web.WebVideoMessage;
 
 public interface ClientActionInterface {
 

@@ -1,17 +1,16 @@
-package icu.jnet.whatsjava.web;
+package icu.jnet.whatsjava.messages.web;
 
 public class WebChat {
 
-	private String jid;
-	private String name;
+	private final String jid;
+	private final String name;
 	
-	private int unreadMessages;
-	private long lastInteraction;
-	private boolean muted;
+	private final int unreadMessages;
+	private final long lastInteraction;
+	private final boolean muted;
 	
 	// Contains variables of a chat
-	
-	
+
 	public WebChat(String jid, String name, int unreadMessages, long lastInteraction, boolean muted) {
 		this.jid = jid;
 		this.name = name;

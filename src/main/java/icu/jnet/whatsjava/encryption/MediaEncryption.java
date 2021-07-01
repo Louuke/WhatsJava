@@ -1,9 +1,14 @@
 package icu.jnet.whatsjava.encryption;
 
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 
 import icu.jnet.whatsjava.helper.Utils;
+
+import javax.imageio.ImageIO;
 
 public class MediaEncryption {
 
@@ -29,7 +34,7 @@ public class MediaEncryption {
 		// refKey mediaKeyExpanded[80:112] not used
 		
 		// Download encrypted media
-		byte[] encryptedMedia = Utils.urlToEncMedia(url);
+		byte[] encryptedMedia = Utils.urlToEncryptedMedia(url);
 		
 		if(encryptedMedia != null) {
 			byte[] file = Arrays.copyOfRange(encryptedMedia, 0, encryptedMedia.length - 10);
@@ -46,7 +51,16 @@ public class MediaEncryption {
 				return AES.decrypt(file, cipherKey, iv);
 			}
 		}
-		
+		return null;
+	}
+
+	public static BufferedImage convertBytesToImage(byte[] bytes) {
+		try {
+			ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
+			return ImageIO.read(bais);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 		return null;
 	}
 }

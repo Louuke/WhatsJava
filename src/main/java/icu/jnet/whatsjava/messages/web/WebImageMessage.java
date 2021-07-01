@@ -1,8 +1,13 @@
-package icu.jnet.whatsjava.web;
+package icu.jnet.whatsjava.messages.web;
 
 import icu.jnet.whatsjava.encryption.MediaEncryption;
 import icu.jnet.whatsjava.encryption.proto.ProtoBuf.ImageMessage;
 import icu.jnet.whatsjava.encryption.proto.ProtoBuf.WebMessageInfo;
+
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
 
 public class WebImageMessage extends WebMessage {
 
@@ -12,9 +17,10 @@ public class WebImageMessage extends WebMessage {
 	 */
 
 	private final String mimetype, url, caption;
-	private final byte[] fileSha256, mediaKey, jpegThumbnail;
+	private final byte[] fileSha256, mediaKey;
 	private final long fileLength;
 	private final int width, height;
+	private final BufferedImage jpegThumbnail, jpegFullResolution;
 
 	public WebImageMessage(WebMessageInfo message) {
 		super(message);
@@ -27,9 +33,12 @@ public class WebImageMessage extends WebMessage {
 		this.fileLength = imageMessage.getFileLength();
 		this.height = imageMessage.getHeight();
 		this.width = imageMessage.getWidth();
-		this.	mediaKey = imageMessage.getMediaKey().toByteArray();
-		this.jpegThumbnail = imageMessage.getJpegThumbnail().toByteArray();
+		this.mediaKey = imageMessage.getMediaKey().toByteArray();
 		this.caption = imageMessage.getCaption();
+
+		// Convert byte array to BufferedImage and load full resolution image
+		this.jpegThumbnail = MediaEncryption.convertBytesToImage(imageMessage.getJpegThumbnail().toByteArray());
+		this.jpegFullResolution = MediaEncryption.convertBytesToImage(MediaEncryption.decrypt(mediaKey, url, MediaEncryption.MEDIA_TYPE_IMAGE));
 	}
 	
 	public String getMimetype() {
@@ -52,12 +61,12 @@ public class WebImageMessage extends WebMessage {
 		return mediaKey;
 	}
 	
-	public byte[] getJpegThumbnail() {
+	public BufferedImage getJpegThumbnail() {
 		return jpegThumbnail;
 	}
 	
-	public byte[] getJpegFullResolution() {
-		return MediaEncryption.decrypt(mediaKey, url, MediaEncryption.MEDIA_TYPE_IMAGE);
+	public BufferedImage getJpegFullResolution() {
+		return jpegFullResolution;
 	}
 	
 	public long getFileLength() {

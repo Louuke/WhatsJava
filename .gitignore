@@ -6,3 +6,4 @@ build
 
 # Ignore WhatsApp credential key storage
 credentials.json
+qr.jpg

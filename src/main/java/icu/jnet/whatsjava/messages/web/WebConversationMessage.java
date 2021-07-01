@@ -1,4 +1,4 @@
-package icu.jnet.whatsjava.web;
+package icu.jnet.whatsjava.messages.web;
 
 import icu.jnet.whatsjava.encryption.proto.ProtoBuf.ExtendedTextMessage;
 import icu.jnet.whatsjava.encryption.proto.ProtoBuf.Message;
@@ -6,7 +6,7 @@ import icu.jnet.whatsjava.encryption.proto.ProtoBuf.WebMessageInfo;
 
 public class WebConversationMessage extends WebMessage {
 
-	private String text;
+	private final String text;
 	private QuotedTextMessage quotedTextMessage;
 	
 	public WebConversationMessage(WebMessageInfo message) {
@@ -53,9 +53,9 @@ public class WebConversationMessage extends WebMessage {
 		return quotedTextMessage;
 	}
 	
-	public class QuotedTextMessage {
+	public static class QuotedTextMessage {
 	
-		private String stanzaId, participant, quotedMessage;
+		private final String stanzaId, participant, quotedMessage;
 		
 		public QuotedTextMessage(String stanzaId, String participant, String quotedMessage) {
 			this.stanzaId = stanzaId;
