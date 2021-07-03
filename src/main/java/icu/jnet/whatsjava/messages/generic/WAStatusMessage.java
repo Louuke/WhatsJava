@@ -1,10 +1,10 @@
 package icu.jnet.whatsjava.messages.generic;
 
-public class WAStatus {
+public class WAStatusMessage {
 
 	private final WAMessage message;
 	
-	public WAStatus(WAMessage message) {
+	public WAStatusMessage(WAMessage message) {
 		this.message = message;
 	}
 	

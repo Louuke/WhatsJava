@@ -32,7 +32,7 @@ public class ClientActionListener implements ClientActionInterface {
 	}
 
 	@Override
-	public void onWAStatus(WAStatus[] status) {
+	public void onWAStatus(WAStatusMessage[] status) {
 
 	}
 

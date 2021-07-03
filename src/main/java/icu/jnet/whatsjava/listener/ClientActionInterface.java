@@ -17,7 +17,7 @@ public interface ClientActionInterface {
 	
 	void onWAContact(WAContact[] contacts);
 	
-	void onWAStatus(WAStatus[] status);
+	void onWAStatus(WAStatusMessage[] status);
 	
 	void onWAEmoji(WAEmoji[] emojis);
 }

@@ -126,9 +126,9 @@ public class WAMessageParser {
 	}
 
 	// Convert json message of the type "status" into WebStatus
-	private static WAStatus[] statusToObject(JsonArray childrenArray) {
+	private static WAStatusMessage[] statusToObject(JsonArray childrenArray) {
 		JsonArray messageArray = childrenArray.get(0).getAsJsonArray().get(2).getAsJsonArray();
-		WAStatus[] waStatuses = new WAStatus[messageArray.size()];
+		WAStatusMessage[] waStatusMessages = new WAStatusMessage[messageArray.size()];
 		
 		for(int i = 0; i < messageArray.size(); i++) {
 			String base64Message = messageArray.get(i).getAsJsonArray().get(2).getAsJsonArray().get(0).getAsString();
@@ -138,16 +138,16 @@ public class WAMessageParser {
 				
 				if(message.getMessage().hasImageMessage()) {
 					// WebMessageInfo to WebImageMessage object
-					waStatuses[i] = new WAStatus(new WAMessage(message).setImageMessage(new WAImageMessage(message)));
+					waStatusMessages[i] = new WAStatusMessage(new WAMessage(message).setImageMessage(new WAImageMessage(message)));
 				} else if(message.getMessage().hasVideoMessage()) {
 					// WebMessageInfo to WebVideoMessage object
-					waStatuses[i] = new WAStatus(new WAVideoMessage(message));
+					waStatusMessages[i] = new WAStatusMessage(new WAVideoMessage(message));
 				}
 			} catch (InvalidProtocolBufferException e) {
 				e.printStackTrace();
 			}
 		}
-		return waStatuses;
+		return waStatusMessages;
 	}
 	
 	// Convert json message of the type "status" into WebEmoji

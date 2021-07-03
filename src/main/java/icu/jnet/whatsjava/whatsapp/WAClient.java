@@ -39,7 +39,7 @@ public class WAClient extends WABackendConnector {
 		sendBinary(request, new byte[]{WAMetric.PRESENCE, Presence.getCode(presence)});
 	}
 
-	// Load direct and group chats
+	// Loads direct and group chats
 	public WAChat[] loadChats() {
 		String request = String.format("['query', {type: 'chat', epoch: '%s'}, null]", Utils.getMessageCount());
 		String jsonMessages = sendBinary(request, new byte[]{WAMetric.QUERY_CHAT, WAFlag.IGNORE}, "\"type\":\"chat\"");
