@@ -2,13 +2,7 @@ package icu.jnet.whatsjava.listener;
 
 import java.awt.image.BufferedImage;
 
-import icu.jnet.whatsjava.messages.web.WebChat;
-import icu.jnet.whatsjava.messages.web.WebContact;
-import icu.jnet.whatsjava.messages.web.WebConversationMessage;
-import icu.jnet.whatsjava.messages.web.WebEmoji;
-import icu.jnet.whatsjava.messages.web.WebImageMessage;
-import icu.jnet.whatsjava.messages.web.WebStatus;
-import icu.jnet.whatsjava.messages.web.WebVideoMessage;
+import icu.jnet.whatsjava.messages.generic.*;
 
 public interface ClientActionInterface {
 
@@ -17,17 +11,13 @@ public interface ClientActionInterface {
 	
 	void onQRCodeScanRequired(BufferedImage img);
 	
-	void onWebConversationMessage(WebConversationMessage conversationMessage);
+	void onWAMessage(WAMessage[] waMessage);
 	
-	void onWebImageMessage(WebImageMessage imageMessage);
+	void onWAChat(WAChat[] chats);
 	
-	void onWebVideoMessage(WebVideoMessage videoMessage); 
+	void onWAContact(WAContact[] contacts);
 	
-	void onWebChat(WebChat[] chats);
+	void onWAStatus(WAStatus[] status);
 	
-	void onWebContact(WebContact[] contacts);
-	
-	void onWebStatus(WebStatus[] status);
-	
-	void onWebEmoji(WebEmoji[] emojis);
+	void onWAEmoji(WAEmoji[] emojis);
 }

@@ -3,25 +3,18 @@ package icu.jnet.whatsjava.messages;
 import java.util.Base64;
 import java.util.Set;
 
-import icu.jnet.whatsjava.messages.web.*;
-import org.apache.commons.codec.binary.Hex;
+import com.google.gson.*;
+import icu.jnet.whatsjava.messages.generic.*;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 import com.google.protobuf.InvalidProtocolBufferException;
 
-import icu.jnet.whatsjava.encryption.proto.ProtoBuf.ExtendedTextMessage;
-import icu.jnet.whatsjava.encryption.proto.ProtoBuf.Message;
-import icu.jnet.whatsjava.encryption.proto.ProtoBuf.MessageKey;
 import icu.jnet.whatsjava.encryption.proto.ProtoBuf.WebMessageInfo;
-import icu.jnet.whatsjava.encryption.proto.ProtoBuf.WebMessageInfo.WEB_MESSAGE_INFO_STATUS;
-import icu.jnet.whatsjava.helper.Utils;
+import icu.jnet.whatsjava.messages.stub.WAStubMessage;
 
 public class WAMessageParser {
 
-	private static WebChat[] storedWebChats;
-	private static WebContact[] storedWebContacts;
+	private static WAChat[] storedWAChats;
+	private static WAContact[] storedWAContacts;
 	
 	/*
 	 * Transforms json messages to objects to make it easier to work with them
@@ -48,10 +41,10 @@ public class WAMessageParser {
 							objects = messageToObject(childrenArray);
 							break;
 						case "chat":
-							objects = !keys.contains("duplicate") ? chatToObject(childrenArray) : storedWebChats;
+							objects = !keys.contains("duplicate") ? chatToObject(childrenArray) : storedWAChats;
 							break;
 						case "contacts":
-							objects = !keys.contains("duplicate") ? contactToObject(childrenArray) : storedWebContacts;
+							objects = !keys.contains("duplicate") ? contactToObject(childrenArray) : storedWAContacts;
 							break;
 						case "status":
 							objects = statusToObject(childrenArray);
@@ -67,9 +60,9 @@ public class WAMessageParser {
 		return objects;
 	}
 
-	// Convert json message of the type "message" into a WebMessageInfo object array
-	private static WebMessage[] messageToObject(JsonArray childrenArray) {
-		WebMessage[] messages = new WebMessage[childrenArray.size()];
+	// Convert json message of the type "message" into a WAMessage object array
+	private static WAMessage[] messageToObject(JsonArray childrenArray) {
+		WAMessage[] messages = new WAMessage[childrenArray.size()];
 
 		for(int i = 0; i < childrenArray.size(); i++) {
 			// WebMessageInfo objects are encoded with base64 and need to be decoded
@@ -77,16 +70,20 @@ public class WAMessageParser {
 			byte[] byteMessage = Base64.getDecoder().decode(base64Message);
 
 			try {
-				WebMessageInfo message = WebMessageInfo.parseFrom(byteMessage);
+				WebMessageInfo webMessageInfo = WebMessageInfo.parseFrom(byteMessage);
+				WAMessage message = new WAMessage(webMessageInfo);
 
 				// Create new message objects depending on the message type
-				if(message.getMessage().hasImageMessage()) {
-					messages[i] = new WebImageMessage(message);
-				} else if(message.getMessage().hasVideoMessage()) {
-					messages[i] = new WebVideoMessage(message);
-				} else if(message.getMessage().hasConversation() || message.getMessage().hasExtendedTextMessage()) {
-					messages[i] = new WebConversationMessage(message);
+				if(webMessageInfo.getMessage().hasImageMessage()) {
+					message.setImageMessage(new WAImageMessage(webMessageInfo));
+				} else if(webMessageInfo.getMessage().hasVideoMessage()) {
+					message.setVideoMessage(new WAVideoMessage(webMessageInfo));
+				} else if(webMessageInfo.getMessage().hasConversation() || webMessageInfo.getMessage().hasExtendedTextMessage()) {
+					message.setConversationMessage(new WAConversationMessage(webMessageInfo));
+				} else if(webMessageInfo.hasMessageStubType()) {
+					message.setStubMessage(new WAStubMessage(webMessageInfo));
 				}
+				messages[i] = message;
 			} catch (InvalidProtocolBufferException e) {
 				e.printStackTrace();
 			}
@@ -94,9 +91,9 @@ public class WAMessageParser {
 		return messages;
 	}
 	
-	// Convert json message of the type "chat" > WebChat
-	private static WebChat[] chatToObject(JsonArray childrenArray) {
-		WebChat[] webChats = new WebChat[childrenArray.size()];
+	// Convert json message of the type "chat" into WAChat
+	private static WAChat[] chatToObject(JsonArray childrenArray) {
+		WAChat[] WAChats = new WAChat[childrenArray.size()];
 		
 		for(int i = 0; i < childrenArray.size(); i++) {
 			JsonObject chatAttributes = childrenArray.get(i).getAsJsonArray().get(1).getAsJsonObject();
@@ -106,15 +103,15 @@ public class WAMessageParser {
 			long lastInteraction = chatAttributes.get("t").getAsLong();
 			boolean muted = chatAttributes.get("mute").getAsBoolean();
 
-			webChats[i] = new WebChat(jid, name, unreadMessages, lastInteraction, muted);
+			WAChats[i] = new WAChat(jid, name, unreadMessages, lastInteraction, muted);
 		}
-		storedWebChats = webChats;
-		return webChats;
+		storedWAChats = WAChats;
+		return WAChats;
 	}
 	
-	// Convert json message of the type "contacts" > WebChat
-	private static WebContact[] contactToObject(JsonArray childrenArray) {
-		WebContact[] contacts = new WebContact[childrenArray.size()];
+	// Convert json message of the type "contacts" into WebChat
+	private static WAContact[] contactToObject(JsonArray childrenArray) {
+		WAContact[] contacts = new WAContact[childrenArray.size()];
 		
 		for(int i = 0; i < childrenArray.size(); i++) {
 			JsonObject chatAttributes = childrenArray.get(i).getAsJsonArray().get(1).getAsJsonObject();
@@ -122,49 +119,48 @@ public class WAMessageParser {
 			String name = chatAttributes.keySet().contains("name") ? chatAttributes.get("name").getAsString()
 					: chatAttributes.keySet().contains("notify") ? chatAttributes.get("notify").getAsString() : null;
 
-			contacts[i] = new WebContact(jid, name);
+			contacts[i] = new WAContact(jid, name);
 		}
-		storedWebContacts = contacts;
+		storedWAContacts = contacts;
 		return contacts;
 	}
 
-	// Convert json message of the type "status" > WebStatus
-	private static Object[] statusToObject(JsonArray childrenArray) {
+	// Convert json message of the type "status" into WebStatus
+	private static WAStatus[] statusToObject(JsonArray childrenArray) {
 		JsonArray messageArray = childrenArray.get(0).getAsJsonArray().get(2).getAsJsonArray();
-		Object[] objects = new Object[messageArray.size()];
+		WAStatus[] waStatuses = new WAStatus[messageArray.size()];
 		
 		for(int i = 0; i < messageArray.size(); i++) {
-			String base64Message = messageArray.get(i).getAsJsonArray().get(2).getAsJsonArray()
-					.get(0).getAsString();
+			String base64Message = messageArray.get(i).getAsJsonArray().get(2).getAsJsonArray().get(0).getAsString();
 			
 			try {
 				WebMessageInfo message = WebMessageInfo.parseFrom(Base64.getDecoder().decode(base64Message));
 				
 				if(message.getMessage().hasImageMessage()) {
 					// WebMessageInfo to WebImageMessage object
-					objects[i] = new WebStatus(new WebImageMessage(message));
+					waStatuses[i] = new WAStatus(new WAMessage(message).setImageMessage(new WAImageMessage(message)));
 				} else if(message.getMessage().hasVideoMessage()) {
 					// WebMessageInfo to WebVideoMessage object
-					objects[i] = new WebStatus(new WebVideoMessage(message));
+					waStatuses[i] = new WAStatus(new WAVideoMessage(message));
 				}
 			} catch (InvalidProtocolBufferException e) {
 				e.printStackTrace();
 			}
 		}
-		return objects;
+		return waStatuses;
 	}
 	
-	// Convert json message of the type "status" > WebEmoji
-	private static Object[] emojiToObject(JsonArray childrenArray) {
-		Object[] objects = new Object[childrenArray.size()];
+	// Convert json message of the type "status" into WebEmoji
+	private static WAEmoji[] emojiToObject(JsonArray childrenArray) {
+		WAEmoji[] waEmojis = new WAEmoji[childrenArray.size()];
 		
 		for(int i = 0; i < childrenArray.size(); i++) {
 			JsonObject emojiAttributes = childrenArray.get(i).getAsJsonArray().get(1).getAsJsonObject();
 			String code = emojiAttributes.get("code").getAsString();
 			double value = Double.parseDouble(emojiAttributes.get("value").getAsString());
-			
-			objects[i] = new WebEmoji(code, value);
+
+			waEmojis[i] = new WAEmoji(code, value);
 		}
-		return objects;
+		return waEmojis;
 	}
 }

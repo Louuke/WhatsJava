@@ -88,7 +88,7 @@ public class Utils {
 		
 		switch(requestType) {
 			case RequestType.LOGIN:
-				request = String.format("[\"admin\", \"init\", [2,2121,6], [\"API\", \"WhatsJava\", \"Unknown\"], \"%s\", true]", content[0]);
+				request = String.format("[\"admin\", \"init\", [2,2121,6], [\"WhatsJava\", \"API\", \"Unknown\"], \"%s\", true]", content[0]);
 				break;
 			case RequestType.RESTORE_SESSION:
 				request = String.format("[\"admin\", \"login\", \"%s\", \"%s\", \"%s\", \"takeover\"]", content[0], content[1], content[2]);
@@ -101,6 +101,12 @@ public class Utils {
 				break;
 			case RequestType.QUERY_PROFILE_PICTURE:
 				request = String.format("[\"query\", \"ProfilePicThumb\", \"%s\"]", content[0]);
+				break;
+			case RequestType.QUERY_USER_PRESENCE:
+				request = String.format("[\"query\", \"Status\", \"%s\"]", content[0]);
+				break;
+			case RequestType.PRESENCE_UPDATE:
+				request = String.format("[\"action\", \"presence\", \"subscribe\", \"%s\"]", content[0]);
 				break;
 		}
 

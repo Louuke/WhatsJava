@@ -1,7 +1,8 @@
 package icu.jnet.whatsjava;
 
 import icu.jnet.whatsjava.listener.ClientActionListener;
-import icu.jnet.whatsjava.messages.web.WebChat;
+import icu.jnet.whatsjava.messages.generic.WAChat;
+import icu.jnet.whatsjava.whatsapp.WAClient;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -14,7 +15,7 @@ public class Main {
 	public static void main(String[] args) {
 		WAClient client = new WAClient();
 		client.setPrintQRCode(true);
-		client.setCredentialsPath("credentials.json");
+		client.setCredentialsPath("credentials.json"); // Optional - It defaults to "credentials.json"
 		client.addClientActionListener(new ClientActionListener() {
 			@Override
 			public void onQRCodeScanRequired(BufferedImage img) {
@@ -22,19 +23,12 @@ public class Main {
 				saveQRCode(img, "qr.jpg");
 			}
 		});
-
 		int httpCode = client.openConnection();
 		if(httpCode == 200) {
 			System.out.println("Logged in successfully!");
 
-			WebChat[] webChats = client.loadChats();
-			System.out.println("You have " + webChats.length + " chats");
-
-			for(WebChat chat : webChats) {
-				System.out.println(chat.getName());
-			}
-
-			client.disconnect();
+			WAChat[] waChats = client.loadChats();
+			System.out.println("You have " + waChats.length + " chats");
 		} else {
 			System.out.println("Restore previous session failed! Code: " + httpCode);
 		}
