@@ -10,11 +10,11 @@ import icu.jnet.whatsjava.helper.*;
 import icu.jnet.whatsjava.listener.ClientActionInterface;
 import icu.jnet.whatsjava.listener.ClientActionListener;
 import icu.jnet.whatsjava.messages.WAMessageParser;
-import org.apache.commons.codec.DecoderException;
-import org.apache.commons.codec.binary.Hex;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Base64;
+import java.util.List;
 
 public class WABackendConnector extends WebSocketAdapter implements PayloadGenerator {
 
@@ -34,11 +34,8 @@ public class WABackendConnector extends WebSocketAdapter implements PayloadGener
     // WebSocket object that is used for communication with the WhatsApp web server.
     protected WebSocket ws;
 
-    // Last received messages from onTextMessage callback
-    private final TimeLimitedList<String> onTextMessageBuffer = new TimeLimitedList<>();
-    // Last received messages from onBinaryMessage callback
-    private final TimeLimitedList<String> onBinaryMessageBuffer = new TimeLimitedList<>();
-
+    // Last received messages from onTextMessage and onBinaryMessage callback
+    private final List<String> textMessageBuffer = new ArrayList<>();
 
     public WABackendConnector() {
         this.auth = AuthCredentials.loadAuthCredentials(credentialsPath);
@@ -209,16 +206,12 @@ public class WABackendConnector extends WebSocketAdapter implements PayloadGener
      * @return
      */
     private String waitForTextMessage(String... search) {
+        textMessageBuffer.clear();
         if(search.length > 0) {
             for(int i = 0; i < 200; i++) {
                 for(String s : search) {
-                    for(String message : onTextMessageBuffer) {
+                    for(String message : textMessageBuffer) {
                         if(message.contains(s)) {
-                            return message;
-                        }
-                    }
-                    for(String message : onBinaryMessageBuffer) {
-                        if (message.contains(s)) {
                             return message;
                         }
                     }
@@ -231,7 +224,7 @@ public class WABackendConnector extends WebSocketAdapter implements PayloadGener
 
     @Override
     public void onTextMessage(WebSocket websocket, String message) throws Exception {
-        onTextMessageBuffer.add(message);
+        textMessageBuffer.add(message);
     }
 
     @Override
@@ -241,7 +234,7 @@ public class WABackendConnector extends WebSocketAdapter implements PayloadGener
 
         // Use protobuf to make messages of the type "message" human readable
         String decoded = new BinaryDecoder().decode(decrypted);
-        onBinaryMessageBuffer.add(decoded);
+        textMessageBuffer.add(decoded);
         WAMessageParser.jsonToObjects(decoded);
     }
 

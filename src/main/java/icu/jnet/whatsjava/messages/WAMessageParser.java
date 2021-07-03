@@ -25,16 +25,16 @@ public class WAMessageParser {
 		if(json != null) {
 			JsonArray node = JsonParser.parseString(json).getAsJsonArray();
 
-			if(!node.get(1).isJsonNull() && !node.get(2).isJsonNull()) {
+			if(!node.get(1).isJsonNull()) {
 				JsonObject attributes = node.get(1).getAsJsonObject();
 				// Attributes key values
 				Set<String> keys = attributes.keySet();
 
-				// Contains node content
-				JsonArray childrenArray = node.get(2).getAsJsonArray();
-
 				if (keys.contains("type")) {
 					String typeValue = attributes.get("type").getAsString();
+
+					// Contains node content
+					JsonArray childrenArray = node.get(2).isJsonArray() ? node.get(2).getAsJsonArray() : null;
 
 					switch (typeValue) {
 						case "message":
