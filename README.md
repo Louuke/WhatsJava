@@ -43,7 +43,7 @@ client.setPrintQRCode(true);
 ```
 To learn how to receive the qr code as BufferedImage please refer to "Message handlers".
 
-### Complete example
+## Complete example
 ```java
 WAClient client = new WAClient();
 client.setPrintQRCode(true);
