@@ -43,6 +43,25 @@ client.setPrintQRCode(true);
 ```
 To learn how to receive the qr code as BufferedImage please refer to "Message handlers".
 
+### Complete example
+```java
+WAClient client = new WAClient();
+client.setPrintQRCode(true);
+client.addClientActionListener(new ClientActionListener() {
+	@Override
+	public void onQRCodeScanRequired(BufferedImage img) {
+		System.out.println("Authentication required! Please scan the QR code!");
+	}
+});
+int httpCode = client.openConnection();
+if(httpCode == 200) {
+	System.out.println("Logged in successfully!");
+	System.out.println("You have " + client.loadChats().length + " chats");
+} else {
+	System.out.println("Login failed! Code: " + httpCode);
+}
+```
+
 ## Message handlers
 After a WAClient instance is initialized, the `addClientActionListener` method can be called to register a `ClientActionInterface` and receive a number of callbacks. `ClientActionListener` is an empty implementation of `ClientActionInterface` interface.
 
