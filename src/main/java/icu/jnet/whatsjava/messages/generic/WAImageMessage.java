@@ -33,7 +33,8 @@ public class WAImageMessage {
 
 		// Convert byte array to BufferedImage and load full resolution image
 		this.jpegThumbnail = MediaEncryption.convertBytesToImage(imageMessage.getJpegThumbnail().toByteArray());
-		this.jpegFullResolution = MediaEncryption.convertBytesToImage(MediaEncryption.decrypt(mediaKey, url, MediaEncryption.MEDIA_TYPE_IMAGE));
+		byte[] decryptedBytes = MediaEncryption.decrypt(mediaKey, url, MediaEncryption.MEDIA_TYPE_IMAGE);
+		this.jpegFullResolution = decryptedBytes != null ? MediaEncryption.convertBytesToImage(decryptedBytes) : jpegThumbnail;
 	}
 	
 	public String getMimetype() {

@@ -34,7 +34,7 @@ public class WAMessageParser {
 					String typeValue = attributes.get("type").getAsString();
 
 					// Contains node content
-					JsonArray childrenArray = node.get(2).isJsonArray() ? node.get(2).getAsJsonArray() : null;
+					JsonArray childrenArray = node.get(2).isJsonArray() ? node.get(2).getAsJsonArray() : new JsonArray();
 
 					switch (typeValue) {
 						case "message":

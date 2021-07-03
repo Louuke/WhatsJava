@@ -35,7 +35,7 @@ public class MediaEncryption {
 		
 		// Download encrypted media
 		byte[] encryptedMedia = Utils.urlToEncryptedMedia(url);
-		
+
 		if(encryptedMedia != null) {
 			byte[] file = Arrays.copyOfRange(encryptedMedia, 0, encryptedMedia.length - 10);
 			byte[] mac = Arrays.copyOfRange(encryptedMedia, encryptedMedia.length - 10, encryptedMedia.length);
@@ -45,7 +45,7 @@ public class MediaEncryption {
 			
 			// Validate macKey of mediaKeyExpanded with mac key of the encrypted media
 			byte[] hmacSign = Utils.signHMAC(macKey, message);
-			
+
 			// Media validated
 			if(Arrays.equals(mac, Arrays.copyOfRange(hmacSign, 0, 10))) {
 				return AES.decrypt(file, cipherKey, iv);
