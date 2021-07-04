@@ -35,7 +35,8 @@ public class WAVideoMessage extends WAMessage {
 		this.gifAttribution = videoMessage.getGifAttribution();
 
 		this.jpegMp4Thumbnail = videoMessage.getJpegThumbnail().toByteArray();
-		this.mp4FullResolution = MediaEncryption.decrypt(mediaKey, url, MediaEncryption.MEDIA_TYPE_VIDEO);
+		byte[] decryptedBytes = MediaEncryption.decrypt(mediaKey, url, MediaEncryption.MEDIA_TYPE_VIDEO);
+		this.mp4FullResolution = decryptedBytes != null ? decryptedBytes : jpegMp4Thumbnail;
 	}
 	
 	public String getMimetype() {
