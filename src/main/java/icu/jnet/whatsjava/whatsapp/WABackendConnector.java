@@ -152,15 +152,14 @@ public class WABackendConnector extends WebSocketAdapter implements PayloadGener
 
                 String challengeResponse = sendText(challengeRequest);
                 loginStatus = Utils.encodeValidJson(challengeResponse).get("status").getAsInt();
-
-                // An error occurred during authentication
-                // Old session data is invalid so it gets deleted
-                if(loginStatus != 200) {
-                    AuthCredentials.deletePreviousSession(credentialsPath);
-                    disconnect();
-                }
             } else {
                 loginStatus = Utils.encodeValidJson(restoreResponse).get("status").getAsInt();
+            }
+            // An error occurred during authentication
+            // Old session data is invalid so it gets deleted
+            if(loginStatus != 200) {
+                AuthCredentials.deletePreviousSession(credentialsPath);
+                disconnect();
             }
         }
         listener.onReceiveLoginResponse(loginStatus);
@@ -216,14 +215,14 @@ public class WABackendConnector extends WebSocketAdapter implements PayloadGener
                         }
                     }
                 }
-                Utils.waitMill(100);
+                Utils.waitMill(50);
             }
         }
         return null;
     }
 
     @Override
-    public void onTextMessage(WebSocket websocket, String message) throws Exception {
+    public void onTextMessage(WebSocket websocket, String message) {
         textMessageBuffer.add(message);
     }
 
@@ -232,7 +231,7 @@ public class WABackendConnector extends WebSocketAdapter implements PayloadGener
         // Decrypt binary message
         byte[] decrypted = BinaryEncryption.decrypt(binaryMessage, auth.getEncryptionKeyPair());
 
-        // Use protobuf to make messages of the type "message" human readable
+        // Use protobuf to make messages of the type "message" human-readable
         String decoded = new BinaryDecoder().decode(decrypted);
         textMessageBuffer.add(decoded);
         WAMessageParser.jsonToObjects(decoded);

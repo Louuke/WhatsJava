@@ -93,7 +93,7 @@ public class WAMessageParser {
 	
 	// Convert json message of the type "chat" into WAChat
 	private static WAChat[] chatToObject(JsonArray childrenArray) {
-		WAChat[] WAChats = new WAChat[childrenArray.size()];
+		WAChat[] waChats = new WAChat[childrenArray.size()];
 		
 		for(int i = 0; i < childrenArray.size(); i++) {
 			JsonObject chatAttributes = childrenArray.get(i).getAsJsonArray().get(1).getAsJsonObject();
@@ -103,10 +103,10 @@ public class WAMessageParser {
 			long lastInteraction = chatAttributes.get("t").getAsLong();
 			boolean muted = chatAttributes.get("mute").getAsBoolean();
 
-			WAChats[i] = new WAChat(jid, name, unreadMessages, lastInteraction, muted);
+			waChats[i] = new WAChat(jid, name, unreadMessages, lastInteraction, muted);
 		}
-		storedWAChats = WAChats;
-		return WAChats;
+		storedWAChats = waChats;
+		return waChats;
 	}
 	
 	// Convert json message of the type "contacts" into WebChat
