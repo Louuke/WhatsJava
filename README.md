@@ -1,3 +1,7 @@
+# ! Note !
+This project is broken and I will most likely no longer maintain it.
+I suggest to switch to the project [WhatsappWeb4j](https://github.com/Auties00/WhatsappWeb4j).
+
 # WhatsJava
 WhatsJava is a reimplementation of the WhatsApp Web API and provides a direct interface for developers.
 
